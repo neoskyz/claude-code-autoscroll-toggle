@@ -1,0 +1,14 @@
+{
+  "name": "neoskyz",
+  "description": "Claude Code plugins by Neo Sky",
+  "owner": { "name": "Neo Sky", "url": "https://github.com/neoskyz" },
+  "plugins": [
+    {
+      "name": "autoscroll-toggle",
+      "source": "./plugins/autoscroll-toggle",
+      "description": "Adds /autoscroll [on|off] to toggle fullscreen Auto-scroll without a model turn",
+      "category": "productivity",
+      "tags": ["autoscroll", "fullscreen", "mod"]
+    }
+  ]
+}

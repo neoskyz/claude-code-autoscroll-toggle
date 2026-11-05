@@ -1,0 +1,10 @@
+{
+  "name": "autoscroll-toggle",
+  "version": "0.1.0",
+  "description": "Adds /autoscroll: flip the fullscreen Auto-scroll setting (autoScrollEnabled) without a model turn",
+  "author": { "name": "Neo Sky", "url": "https://github.com/neoskyz" },
+  "homepage": "https://github.com/neoskyz/claude-code-autoscroll-toggle",
+  "repository": "https://github.com/neoskyz/claude-code-autoscroll-toggle",
+  "license": "MIT",
+  "keywords": ["autoscroll", "fullscreen", "mod", "toggle"]
+}
