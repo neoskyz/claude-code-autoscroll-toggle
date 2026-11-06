@@ -15,7 +15,7 @@ In [fullscreen rendering](https://code.claude.com/docs/en/fullscreen), Claude Co
 The only built-in switch is a row in `/config`, which takes several keystrokes and a menu each time. This plugin makes it one command (or one key chord), and it runs instantly:
 
 - it is registered as `immediate`, so it works while Claude is busy;
-- it costs no model turn and prints nothing into the transcript, so Claude never reads it;
+- it costs no model turn, does not move your scroll position (via the key chord), and prints nothing into the transcript, so Claude never reads it;
 - you get a small toast: `Auto-scroll ON` / `Auto-scroll OFF`.
 
 ## Install
@@ -36,7 +36,7 @@ claude plugin install autoscroll-toggle@neoskyz
 
 Then start a new session (or run `/reload-plugins`). `/autoscroll` shows up in the `/` command list.
 
-## Optional: a key chord
+## Recommended: a key chord
 
 Plugins cannot ship keybindings, so add one yourself in `~/.claude/keybindings.json` ([docs](https://code.claude.com/docs/en/keybindings)). This binds `Ctrl+X Ctrl+F` ("follow") in the chat input:
 
@@ -47,7 +47,7 @@ Plugins cannot ship keybindings, so add one yourself in `~/.claude/keybindings.j
     {
       "context": "Chat",
       "bindings": {
-        "ctrl+x ctrl+f": "command:autoscroll"
+        "ctrl+x ctrl+f": "theme:editCustom"
       }
     }
   ]
@@ -56,19 +56,24 @@ Plugins cannot ship keybindings, so add one yourself in `~/.claude/keybindings.j
 
 If the file already has a `bindings` array, add the `Chat` entry to it instead of replacing the file.
 
+**Why `theme:editCustom` and not `command:autoscroll`?** A `command:` binding submits `/autoscroll` exactly like typing it and pressing Enter, and Claude Code scrolls the transcript to the bottom on every submit while Auto-scroll is on. So turning Auto-scroll *off* that way would yank you away from what you were reading. Plugins cannot define their own keybinding actions, so the plugin borrows `theme:editCustom` (which Claude Code only handles inside the `/theme` picker, where `ctrl+e` keeps working): a hidden button under the prompt answers that action's chord and flips the setting without submitting anything. Your scroll position stays put, in both directions.
+
+Typing `/autoscroll` still works, but because it is a submit, turning it off that way jumps to the bottom once.
+
 ## How it works
 
-The plugin is a [mod](https://code.claude.com/docs/en/plugins/mods/overview): a hooks module, [`hooks/register.ts`](plugins/autoscroll-toggle/hooks/register.ts), that Claude Code loads directly (no build step).
+The plugin is a [mod](https://code.claude.com/docs/en/plugins/mods/overview): a hooks module, [`hooks/register.tsx`](plugins/autoscroll-toggle/hooks/register.tsx), that Claude Code loads directly (no build step).
 
 1. On `session.start` it registers `/autoscroll` with `$.command.register`.
-2. On `command.run` it looks up the Auto-scroll row with `$.config.list()` and flips it with `$.config.set()`, exactly as the `/config` menu does. The change applies to the running session and is saved to your user settings.
-3. If that path is unavailable or refused, it falls back to the bundled script [`scripts/toggle-autoscroll.py`](plugins/autoscroll-toggle/scripts/toggle-autoscroll.py), which flips `autoScrollEnabled` in `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`) with an atomic write. Claude Code's settings watcher picks the change up.
+2. On `ui.render` for the hint line under the prompt (`PromptHint`), it keeps Claude Code's own line and adds a hidden `Button` whose `action` is `theme:editCustom`. Your chord for that action presses the button directly, with no prompt submit, so the view does not move.
+3. The command and the button both look up the Auto-scroll row with `$.config.list()` and flip it with `$.config.set()`, exactly as the `/config` menu does. The change applies to the running session and is saved to your user settings.
+4. If that path is unavailable or refused, it falls back to the bundled script [`scripts/toggle-autoscroll.py`](plugins/autoscroll-toggle/scripts/toggle-autoscroll.py), which flips `autoScrollEnabled` in `~/.claude/settings.json` (or `$CLAUDE_CONFIG_DIR/settings.json`) with an atomic write. Claude Code's settings watcher picks the change up.
 
 The script only touches that one key and uses the Python standard library.
 
 ## Requirements
 
-- Claude Code with mods support (v2.1.287 or later). Tested with **v2.1.318** on macOS. The mods API can change between releases.
+- Claude Code with mods support (v2.1.287 or later). Tested with **v2.1.319** on macOS. The mods API can change between releases.
 - Fullscreen rendering, since that is where Auto-scroll applies.
 - `python3` on your `PATH`, only for the fallback path.
 

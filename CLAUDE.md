@@ -7,7 +7,7 @@
 - `.claude-plugin/marketplace.json`：marketplace 清单，名字 `neoskyz`，列出 `plugins/` 下的插件。
 - `plugins/autoscroll-toggle/`：插件本体（这个目录才会被装到用户机器上）。
   - `.claude-plugin/plugin.json`：插件 manifest，`name` 必须和 marketplace 条目一致。
-  - `hooks/hooks.json` → `hooks/register.ts`：hooks module（入口）。
+  - `hooks/hooks.json` → `hooks/register.tsx`：hooks module（入口）。
   - `scripts/toggle-autoscroll.py`：fallback 脚本，通过 `$.plugin.root` 引用，stdlib only。
   - `tests/*.test.ts`：`claude plugin test` 跑的测试。
 - `README.md`：给用户看的说明（英文）。

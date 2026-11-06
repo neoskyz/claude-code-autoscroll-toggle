@@ -27,3 +27,12 @@
 - **内容：** README 给出 `~/.claude/keybindings.json` 片段（`ctrl+x ctrl+f` → `command:autoscroll`），由用户自己加。
 - **为什么：** 插件组件里没有 keybindings 这一类（见 F-001）。
 - **何时重新考虑：** Claude Code 支持插件提供 keybindings 时。
+
+### D-004 快捷键改为借用 `theme:editCustom`，由 PromptHint 里的隐藏 Button 响应
+
+- **状态：** 生效（2026-11-05）
+- **内容：** `ui.render` hook 挂在 `PromptHint`（prompt 下面那行提示，terminal 下常驻），保留引擎原来的行，加一个 `display: "none"` 的 Button（`action: "theme:editCustom"`）。README 的 keybinding 片段改为 `"ctrl+x ctrl+f": "theme:editCustom"`。`/autoscroll` 命令保留（手打用）。版本 0.2.0。
+- **为什么：** `command:` 绑定一定走 submit，submit 一定 repin（F-004），插件改不了；Button action 是唯一不走 submit 的按键入口（F-005）。挂 `PromptHint` 而不是 `AbovePrompt`：band 会画 `[-]`，hint 行不会多出可见内容。
+- **备选：** `AbovePrompt` band 里放可见按钮（多一行 UI）；继续用 `command:` 只修 ON→OFF 以外的情况（不解决问题）；给 Anthropic 提需求：插件命令支持 `keepsScrollPosition`，或插件可以注册自己的 keybinding action。
+- **代价：** keybindings.json 里写的是一个看起来不相关的 action 名；如果引擎以后在 Chat context 给 `theme:editCustom` 加 handler，chord 会被引擎抢走。
+- **何时重新考虑：** Claude Code 支持插件命令保持滚动位置、或插件自定义 keybinding action 时，改回语义正确的绑定。

@@ -24,4 +24,5 @@
 
 ## 最近完成
 
+- 2026-11-05 修复：按 chord 关 Auto-scroll 时视图跳到底部（F-004、D-004），v0.2.0。
 - 2026-11-04 打包成独立 GitHub 仓库 + marketplace，fallback 脚本内置，加测试。
